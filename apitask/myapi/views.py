@@ -17,22 +17,25 @@ class myimageView(APIView):
         return Response(serializer.data)
   
     def post(self, request):
-        print(request.data)
-        myname=request.data['my_image'].name
-        myformat=""
-        for c in reversed(myname):
-            myformat+=c
-            if c=='.' :
-                break
-        myformat=myformat[: : -1]
-        request.FILES['my_image'].name=request.data['my_id']+myformat
-       
-        serializer = myimageserializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        image_exist =  myimage.objects.all()
+        #print(is_image_exist)
+        if not image_exist :
+            myname=request.data['my_image'].name
+            myformat=""
+            for c in reversed(myname):
+                myformat+=c
+                if c=='.' :
+                    break
+            myformat=myformat[: : -1]
+            request.FILES['my_image'].name = request.data['my_name']+myformat
+        
+            serializer = myimageserializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_208_ALREADY_REPORTED)
+        
 
 class myimagedetailsView(APIView):
     def get_object(self, id):
@@ -48,6 +51,7 @@ class myimagedetailsView(APIView):
 
     def put(self, request,id):
         myimage_id = self.get_object(id)
+
         myname=request.data['my_image'].name
         myformat=""
         for c in reversed(myname):
@@ -75,6 +79,7 @@ class allmyimagedetailsView(APIView):
         print(serializer.data)
         return Response(serializer.data)
 
+    # used in deleting all images in folder
     def delete(self, request, my_id):
         m=myimage.objects.filter(my_id=my_id)
         m.delete()
