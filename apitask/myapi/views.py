@@ -8,6 +8,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
+import os
+from apitask.settings import BASE_DIR
 
 class myimageView(APIView):
    
@@ -18,6 +20,7 @@ class myimageView(APIView):
   
     def post(self, request):
         image_exist =  myimage.objects.all()
+        
         #print(is_image_exist)
         if not image_exist :
             myname=request.data['my_image'].name
@@ -34,7 +37,7 @@ class myimageView(APIView):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_208_ALREADY_REPORTED)
+        return Response( status=status.HTTP_404_NOT_FOUND)
         
 
 class myimagedetailsView(APIView):
@@ -73,16 +76,30 @@ class myimagedetailsView(APIView):
 
 class allmyimagedetailsView(APIView): 
 
+
+    # used in deleting all images in folder
     def get(self, request,my_id):
         m=myimage.objects.filter(my_id=my_id)
         serializer = myimageserializer(m,many=True)
         print(serializer.data)
         return Response(serializer.data)
 
-    # used in deleting all images in folder
+
+
+    #deleting all images in folder and deleting empty folder in directory
     def delete(self, request, my_id):
         m=myimage.objects.filter(my_id=my_id)
+        if not m :
+            return Response(status=status.HTTP_404_NOT_FOUND)
         m.delete()
+
+        REPOSITORY_ROOT = os.path.dirname(BASE_DIR)
+        for root, dirs, files in os.walk(os.path.join(REPOSITORY_ROOT, 'media/images')):
+            for d in dirs:
+                dir = os.path.join(root, d)
+                # check if dir is empty
+                if not os.listdir(dir):
+                    os.rmdir(dir)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     

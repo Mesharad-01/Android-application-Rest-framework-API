@@ -4,8 +4,10 @@ from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch.dispatcher import receiver
 
+#making folder for images 
 def upload_path(instance,filename):
     return '/'.join(['images',str(instance.my_id),filename])
+
 
 # Create your models here.
 class myimage(models.Model):
@@ -16,10 +18,12 @@ class myimage(models.Model):
     def __str__(self):
         return self.my_name
         
-    #def delete(self, *args, **kwargs):
+        #def delete(self, *args, **kwargs):
         #storage, path = self.my_image.storage, self.my_image.path
         #super(myimage, self).delete(*args, **kwargs)
         #storage.delete(path)
+
+#for deleting the images from media folder associated with object
 @receiver(pre_delete, sender=myimage)
 def mymodel_delete(sender, instance, **kwargs):
     instance.my_image.delete(False)

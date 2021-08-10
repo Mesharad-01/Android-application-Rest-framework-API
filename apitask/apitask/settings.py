@@ -25,6 +25,7 @@ SECRET_KEY = '(+2%t^i51p=p0j=4r^w5+mb(43ym9sjfzig46idswuku4g@ug&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Ip address of  host devices 
 ALLOWED_HOSTS = ['192.168.43.195','127.0.0.1']
 
 
