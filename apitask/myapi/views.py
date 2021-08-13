@@ -19,7 +19,8 @@ class myimageView(APIView):
         return Response(serializer.data)
   
     def post(self, request):
-        image_exist =  myimage.objects.all()
+        my_id = request.data['my_id']
+        image_exist =  myimage.objects.filter(my_id=my_id)
         
         #print(is_image_exist)
         if not image_exist :
@@ -87,6 +88,7 @@ class allmyimagedetailsView(APIView):
 
 
     #deleting all images in folder and deleting empty folder in directory
+    
     def delete(self, request, my_id):
         m=myimage.objects.filter(my_id=my_id)
         if not m :
